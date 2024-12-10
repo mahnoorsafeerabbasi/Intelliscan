@@ -1,0 +1,26 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "start": {
+      "cache": false,
+      "dependsOn": ["prestart", "^start"]
+    },
+    "watch": {
+      "cache": false,
+      "dependsOn": ["prestart", "^watch"]
+    },
+    "prestart": {
+      "cache": false
+    },
+    "build": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "cache": false
+    },
+    "lint": {
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "ts": {
+    "name": "typescript",
+    "displayName": "TypeScript",
+    "icon": "original"
+  },
+  "py": { "name": "python", "displayName": "Python", "icon": "original" },
+  "js": {
+    "name": "javascript",
+    "displayName": "JavaScript",
+    "icon": "original"
+  },
+  "rs": { "name": "rust", "displayName": "Rust", "icon": "plain" },
+  "csharp": { "name": "csharp", "displayName": "C#", "icon": "plain" },
+  "java": {
+    "name": "java",
+    "displayName": "Java",
+    "icon": "original"
+  },
+  "go": { "name": "go", "displayName": "Go", "icon": "original" },
+  "kt": { "name": "kotlin", "displayName": "Kotlin", "icon": "original" },
+  "dart": { "name": "dart", "displayName": "Dart", "icon": "original" },
+  "scala": { "name": "scala", "displayName": "Scala", "icon": "original" }
+}
