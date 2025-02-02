@@ -1,0 +1,6 @@
+java_plagiarism_detection/
+├── app.py
+├── requirements.txt
+└── utils.py
+uvicorn app:app --host 0.0.0.0 --port 4002 --reload
+
