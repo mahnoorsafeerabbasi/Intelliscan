@@ -1,0 +1,21 @@
+my_project/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   ├── dependencies.py
+│   ├── models.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── search_service.py
+│   │   ├── github_service.py
+│   │   ├── youtube_service.py
+│   │   └── gemini_service.py
+│   └── routes/
+│       ├── __init__.py
+│       └── search_routes.py
+│
+└── requirements.txt
+
+uvicorn app.main:app --host 127.0.0.1 --port 8005 --reload

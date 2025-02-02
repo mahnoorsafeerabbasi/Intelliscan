@@ -1,0 +1,17 @@
+plagiarism_detector/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── upload.py
+│   │   └── report.py
+│   └── utils/
+│       ├── __init__.py
+│       └── file_handler.py
+├── reports/
+│
+└── requirements.txt
+#uvicorn app.main:app --host 0.0.0.0 --port 5000
