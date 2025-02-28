@@ -94,4 +94,3 @@ In addition to OCR, **Google Gemini** is used to intelligently extract only the 
 - Clone the repo
 - Install requirements
 - Run FastAPI server
-
