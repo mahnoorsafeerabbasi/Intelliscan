@@ -1,8 +1,6 @@
 from email.mime import text
 import os
 import re
-from tkinter import font
-from turtle import color
 import torch
 import matplotlib.pyplot as plt
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, background
@@ -22,28 +20,19 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from services import process_input  # Importing the process_input function
 from fastapi.middleware.cors import CORSMiddleware
-import base64
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
-from reportlab.platypus import (
-    SimpleDocTemplate, 
-    Paragraph, 
-    Spacer, 
-    Image,
-    ListFlowable,
-    ListItem
-)
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.platypus.paragraph import Paragraph
+from dotenv import load_dotenv  # Importing dotenv to load environment variables
 
-# API Keys and configurations 
-#AIzaSyCPW8EMFYkdTMyAk3gGZW76w4cWO5apXpU
-API_KEY = "AIzaSyCPW8EMFYkdTMyAk3gGZW76w4cWO5apXpU"
-PINECONE_API_KEY = "0a248db7-1c0a-46d8-999d-ac588e3419d5"
-INDEX_NAME = "java-plagiarism-detection"
-MODEL_NAME = 'bert-base-uncased'
+# Load environment variables from .env file
+load_dotenv()
+
+# Configuration settings (API keys are now loaded from environment variables)
+API_KEY = os.getenv("API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+INDEX_NAME = os.getenv("INDEX_NAME", "java-plagiarism-detection")  # Default value if not provided
+MODEL_NAME = os.getenv("MODEL_NAME", "bert-base-uncased")  # Default value if not provided
+
+# Set the API key for Google Gemini
+os.environ["API_KEY"] = API_KEY
 
 # Initialize Pinecone
 pc = Pinecone(api_key=PINECONE_API_KEY)
@@ -55,14 +44,12 @@ model = AutoModel.from_pretrained(MODEL_NAME)
 
 # Initialize Gemini model
 genai.configure(api_key=API_KEY)
-gemini_model = genai.GenerativeModel('gemini-1.5-flash') #gemini-1.5-pro-exp-0827
+gemini_model = genai.GenerativeModel('gemini-1.5-flash')
 
 analysis_results = {}
 
 # Function to preprocess code
 def preprocess_code(code):
-    code = re.sub(r'//.*?\n', '', code)  # Single line comments
-    code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)  # Multi-line comments
     code = re.sub(r'\s+', ' ', code)
     return code.strip()
 
@@ -104,12 +91,14 @@ def get_gemini_percentages(code_snippet):
     return 0.0, 0.0  # Default if not found
 
 # Function to analyze code with Gemini model based on final verdict
+#LLM vs LLM approach, here gemini is acting as a judge to evaluate whether the percentage fetched from pinecone is jusified or not
 def analyze_code_with_gemini(code_snippet, final_verdict):
+    # Constructing the analysis prompt
     analysis_prompt = (
         f"Analyze the following code snippet with a final AI generation verdict of {final_verdict:.2f}%. "
         "Provide your response in the following structured format:\n\n"
         "## Overall Assessment\n"
-        "Brief summary of AI vs. human-written code\n\n"
+        "Brief summary of AI vs. human-written code.\n\n"
         "## Characteristics of AI-Generated Code\n"
         "- Bullet point 1\n"
         "- Bullet point 2\n\n"
@@ -121,8 +110,13 @@ def analyze_code_with_gemini(code_snippet, final_verdict):
         f"Code Snippet:\n```\n{code_snippet}\n```"
     )
     
-    response = gemini_model.generate_content(analysis_prompt).text.strip()
-    return response
+    # Generate the analysis using the Gemini model
+    try:
+        response = gemini_model.generate_content(analysis_prompt).text.strip()
+        return response
+    except Exception as e:
+        return f"Error during analysis: {str(e)}"
+
 def format_gemini_response(gemini_response):
     # Replace markdown headers with HTML <h2>, <h3>, etc.
     gemini_response = re.sub(r'## (.*)', r'<h2 style="color:#007BFF;">\1</h2>', gemini_response)
@@ -152,14 +146,15 @@ def calculate_pinecone_percentages(matches):
     return ai_percentage, human_percentage
 
 # Function to calculate final verdict
-def calculate_final_verdict(gemini_percentage, pinecone_ai_percentage, pinecone_human_percentage):
-    # Determine the final verdict based on the given conditions
+def calculate_final_verdict(pinecone_ai_percentage, pinecone_human_percentage):
+    # Determine the final verdict based on the Pinecone percentages
     if pinecone_human_percentage > 50:
-        return (gemini_percentage + pinecone_ai_percentage) / 2
+        return pinecone_ai_percentage  # Use only the Pinecone AI percentage
     elif pinecone_ai_percentage >= 50:
         return pinecone_ai_percentage
     else:
         return pinecone_human_percentage
+
 
 # Function to create visualizations
 def create_visualizations(final_verdict):
@@ -414,7 +409,7 @@ async def analyze_code(
         pinecone_ai_percentage, pinecone_human_percentage = calculate_pinecone_percentages(top_matches)
         
         # Calculate final verdict
-        final_verdict = calculate_final_verdict(gemini_ai_percentage, pinecone_ai_percentage, pinecone_human_percentage)
+        final_verdict = calculate_final_verdict(pinecone_ai_percentage, pinecone_human_percentage)
 
         # Analyze code using Gemini model
         reasoning = analyze_code_with_gemini(processed_code, final_verdict)
