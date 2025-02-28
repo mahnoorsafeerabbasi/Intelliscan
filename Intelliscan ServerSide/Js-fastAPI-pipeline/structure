@@ -1,5 +1,4 @@
-js_plagiarism_detection/
-├── app.py
-├── requirements.txt
-└── utils.py
-uvicorn app:app --host 0.0.0.0 --port 4003 --reload
+API_KEY=your_google_api_key_here
+PINECONE_API_KEY=your_pinecone_api_key_here
+INDEX_NAME=cpp-plagiarism-detection
+MODEL_NAME=bert-base-uncased
