@@ -1,8 +1,6 @@
 from email.mime import text
 import os
 import re
-from tkinter import font
-from turtle import color
 import torch
 import matplotlib.pyplot as plt
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, background
@@ -20,31 +18,20 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
-from services import process_input  # Importing the process_input function
+from services import process_input  
 from fastapi.middleware.cors import CORSMiddleware
-import base64
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
-from reportlab.platypus import (
-    SimpleDocTemplate, 
-    Paragraph, 
-    Spacer, 
-    Image,
-    ListFlowable,
-    ListItem
-)
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.platypus.paragraph import Paragraph
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
-# API Keys and configurations 
-#AIzaSyCPW8EMFYkdTMyAk3gGZW76w4cWO5apXpU
-API_KEY = "AIzaSyCPW8EMFYkdTMyAk3gGZW76w4cWO5apXpU"
-PINECONE_API_KEY = "0a248db7-1c0a-46d8-999d-ac588e3419d5"
-INDEX_NAME = "javascript-plagiarism-detection"
-MODEL_NAME = 'bert-base-uncased'
+API_KEY = os.getenv("API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+INDEX_NAME = os.getenv("INDEX_NAME", "cpp-plagiarism-detection") 
+MODEL_NAME = os.getenv("MODEL_NAME", "bert-base-uncased")
+
+# Set the API key for Google Gemini
+os.environ["API_KEY"] = API_KEY
 
 # Initialize Pinecone
 pc = Pinecone(api_key=PINECONE_API_KEY)
@@ -56,14 +43,12 @@ model = AutoModel.from_pretrained(MODEL_NAME)
 
 # Initialize Gemini model
 genai.configure(api_key=API_KEY)
-gemini_model = genai.GenerativeModel('gemini-1.5-flash') #gemini-1.5-pro-exp-0827
+gemini_model = genai.GenerativeModel('gemini-1.5-pro-latest')
 
 analysis_results = {}
 
 # Function to preprocess code
 def preprocess_code(code):
-    code = re.sub(r'//.*?\n', '', code)  # Single line comments
-    code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)  # Multi-line comments
     code = re.sub(r'\s+', ' ', code)
     return code.strip()
 
@@ -86,7 +71,8 @@ def find_top_matches(code, top_k=5):
     matches = query_response.matches if query_response.matches else []
     return matches
 
-# Function to get AI and human percentages from Gemini model
+# Function to get AI and human percentages from Gemini model (for testing purpose to check if gemini is able to give
+# better percentages to detect whether the code is written by human or AI or pinecone reult is better)
 def get_gemini_percentages(code_snippet):
     analysis_prompt = (
         f"Evaluate the following code snippet and estimate the percentage of human-written code and AI-generated code. "
@@ -104,7 +90,7 @@ def get_gemini_percentages(code_snippet):
 
     return 0.0, 0.0  # Default if not found
 
-# Function to analyze code with Gemini model based on final verdict
+# Function to analyze code with Gemini model based on final verdict, here gemini will act as a judge to dtermine whether the results fetched by pinecone RAG are justified or not 
 def analyze_code_with_gemini(code_snippet, final_verdict):
     analysis_prompt = (
         f"Analyze the following code snippet with a final AI generation verdict of {final_verdict:.2f}%. "
@@ -124,6 +110,8 @@ def analyze_code_with_gemini(code_snippet, final_verdict):
     
     response = gemini_model.generate_content(analysis_prompt).text.strip()
     return response
+
+
 def format_gemini_response(gemini_response):
     # Replace markdown headers with HTML <h2>, <h3>, etc.
     gemini_response = re.sub(r'## (.*)', r'<h2 style="color:#007BFF;">\1</h2>', gemini_response)
