@@ -27,7 +27,7 @@ load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-INDEX_NAME = os.getenv("INDEX_NAME", "cpp-plagiarism-detection") 
+INDEX_NAME = os.getenv("INDEX_NAME", "javascript-plagiarism-detection") 
 MODEL_NAME = os.getenv("MODEL_NAME", "bert-base-uncased")
 
 # Set the API key for Google Gemini
