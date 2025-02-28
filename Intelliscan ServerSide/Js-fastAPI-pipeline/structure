@@ -1,4 +1,0 @@
-API_KEY=your_google_api_key_here
-PINECONE_API_KEY=your_pinecone_api_key_here
-INDEX_NAME=cpp-plagiarism-detection
-MODEL_NAME=bert-base-uncased
