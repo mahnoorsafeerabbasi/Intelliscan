@@ -14,7 +14,7 @@ Intellicheck is built to provide a web-based interface for detecting plagiarism 
 - **Linear Regression Model**: Uses a customized linear regression model to compare code files for similarities.
 - **Threshold Customization**: The plagiarism detection thresholds have been fine-tuned to suit academic use cases, making it sensitive enough for student assignments.
 - **FastAPI Interface**: Provides a user-friendly API to upload code files and receive plagiarism analysis.
-- **Multi-language Support**: Detects plagiarism for popular programming languages like Python, Java, C++, and JavaScript.
+- **Multi-language Support**: Detects plagiarism for popular programming languages like Python, Java, C++, and JavaScript and many more.
 
 ---
 
