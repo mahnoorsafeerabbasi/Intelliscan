@@ -24,6 +24,22 @@ While the current model is not perfect, it presents an interesting first step to
 
 The system compares code snippets to check for common AI traits and then provides a detailed breakdown of whether the code is more likely human-written or AI-generated.
 
+## File Types Supported
+
+This tool can intelligently process code not only from plain code files but also from documents that may contain code snippets embedded within text, or code images embedded within text, PDF, Docx file such as:
+
+- **Code files**: `.py`, `.js`, `.java`, `.cpp`
+- **Document files**: `.pdf`, `.docx` (with code and code images embedded within them)
+- **Images**: Images containing code snippets, including those found within PDFs or DOCX files.
+
+### OCR Integration for Images
+
+OCR (Optical Character Recognition) is integrated into the system to intelligently extract code from images. This is particularly useful for students who may upload images of code instead of text-based code files. The OCR process helps recognize code in images, even if they are embedded inside a PDF or DOCX file, and feeds it into the system for further analysis.
+
+### Gemini for Document Processing
+
+In addition to OCR, **Google Gemini** is used to intelligently extract only the relevant **code portions** from documents (PDFs or DOCX) that contain both descriptive text and code. This helps in eliminating irrelevant parts of documents and focusing on the code for accurate analysis.
+
 ## How It Works
 
 ### 1. **Preprocessing**:
@@ -75,8 +91,7 @@ The system compares code snippets to check for common AI traits and then provide
 ### Prerequisites:
 - Python 3.x
 - An IDE or text editor (like VSCode or PyCharm)
-- clone the repo
-- intall reuirements
--run fast-API
-
+- Clone the repo
+- Install requirements
+- Run FastAPI server
 
