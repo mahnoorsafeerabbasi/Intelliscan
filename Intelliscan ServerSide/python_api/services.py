@@ -6,16 +6,31 @@ from docx import Document
 import io
 from io import BytesIO
 import google.generativeai as genai
+from dotenv import load_dotenv
+import genai
 import os
 
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB in bytes
-ALLOWED_CODE_EXTENSIONS = [".py"]  # Changed from .cpp to .py
+MAX_FILE_SIZE = 5 * 1024 * 1024 
+ALLOWED_CODE_EXTENSIONS = [".py"] 
 ALLOWED_NON_CODE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".pdf", ".docx", ".txt"]
 
 # Configure Gemini model
-os.environ["API_KEY"] = "AIzaSyARlq_4JmeSD4FVt3xEYzo1s40Bck7o8XY"
-genai.configure(api_key=os.environ["API_KEY"])
+# Load environment variables from the .env file
+load_dotenv()
+
+# Fetch the API key from the environment variable
+api_key = os.getenv("API_KEY")
+
+# Ensure the API key is properly loaded
+if api_key is None:
+    raise ValueError("API_KEY is missing. Please check your .env file.")
+
+# Use the API key in your configuration
+genai.configure(api_key=api_key)
+
+# Initialize the Gemini model
 gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+
 
 def process_input(file_content: bytes = None, filename: str = None, code_snippet: str = None) -> dict:
     if not file_content and not code_snippet:
