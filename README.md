@@ -22,7 +22,7 @@ Ensure you have the following installed:
 ### Backend Setup (FastAPI)
 1. Navigate to the backend directory:
    ```sh
-   cd clientside
+   cd serverside
    ```
 2. Create and activate a virtual environment:
    ```sh
@@ -41,7 +41,7 @@ Ensure you have the following installed:
 ### Frontend Setup (Next.js)
 1. Navigate to the frontend directory:
    ```sh
-   cd serverside
+   cd clientside
    ```
 2. Install dependencies:
    ```sh
