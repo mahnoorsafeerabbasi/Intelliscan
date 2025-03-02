@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -33,3 +34,20 @@ server-files/
 dump.rdb
 megalinter-reports/
 1.json
+=======
+# Node.js
+node_modules/
+
+# Next.js
+.next/
+.out/
+
+# Python (FastAPI)
+__pycache__/
+*.pyc
+.env
+
+# Docker
+*.dockerfile
+docker-compose.yml
+>>>>>>> 19a369a1f6d1ca8942b0ac6bbcc1f57d63d98fa2
